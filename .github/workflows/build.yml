@@ -42,9 +42,9 @@ jobs:
       - run: ./gradlew runData
         if: github.event.inputs.assets == 'true'
         continue-on-error: true
-      - run: VERSION=${{ github.event.inputs.version }} ./gradlew build
+      - run: VERSION="${{ github.event.inputs.version }}"" ./gradlew build
       
-      - run: echo "DEPS=$(echo ${{ github.event.inputs.deps }} | sed 's/,/\n/g')" >> $GITHUB_ENV
+      - run: echo "DEPS=$(echo "${{ github.event.inputs.deps }}" | sed 's/,/\n/g')" >> $GITHUB_ENV
       - run: echo "FILE=$(ls -d build/libs/*)" >> $GITHUB_ENV
       - run: echo "FILENAME=$(cd build/libs; ls *)" >> $GITHUB_ENV
       - run: cd ../../
@@ -57,6 +57,7 @@ jobs:
           version-type: ${{ github.event.inputs.type }}
           loaders: "forge"
           game-versions: "1.16.5"
+          dependencies: ${{ env.DEPS }}
           java: "8"
 
           modrinth-id: "Lddihzs4"
