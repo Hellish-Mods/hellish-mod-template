@@ -22,7 +22,7 @@ on:
         default: ""
       publish:
         type: boolean
-        description: "Publish to curseforge and modrinth?"
+        description: "Publish to curseforge and modrinth"
         required: false
         default: true
 
@@ -64,6 +64,7 @@ jobs:
           release_id: ${{ steps.create_release.outputs.id }}
 
       - uses: itsmeow/curseforge-upload@v3
+        if: github.event.inputs.publish == 'true'
         with:
           file_path: ${{ env.FILE }}
           game_endpoint: "minecraft"
