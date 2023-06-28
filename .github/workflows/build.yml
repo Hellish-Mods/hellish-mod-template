@@ -37,14 +37,12 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - run: echo "\nversion=${{ github.event.inputs.version }}" >> gradle.properties
-      
       - run: rm -rf src/generated
         if: github.event.inputs.assets == 'true'
       - run: ./gradlew runData
         if: github.event.inputs.assets == 'true'
         continue-on-error: true
-      - run: ./gradlew build
+      - run: VERSION=${{ github.event.inputs.version }} ./gradlew build
       
       - run: echo "DEPS=$(echo ${{ github.event.inputs.deps }} | sed 's/,/\n/g')" >> $GITHUB_ENV
       - run: echo "FILE=$(ls -d build/libs/*)" >> $GITHUB_ENV

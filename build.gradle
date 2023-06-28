@@ -12,6 +12,7 @@ apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
 
+version = "${System.env.VERSION}"
 group = 'site.hellishmods.hellishtemplate'
 archivesBaseName = 'hellishtemplate'
 
