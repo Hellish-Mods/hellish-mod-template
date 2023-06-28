@@ -20,6 +20,11 @@ on:
         description: "Changelog"
         required: false
         default: ""
+      assets:
+        type: boolean
+        description: "Generate assets"
+        required: false
+        default: false
       publish:
         type: boolean
         description: "Publish to curseforge and modrinth"
@@ -32,44 +37,35 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - run: echo "version=${{ github.event.inputs.version }}" >> gradle.properties
+      - run: echo "\nversion=${{ github.event.inputs.version }}" >> gradle.properties
+      
+      - run: rm -rf src/generated
+        if: github.event.inputs.assets == 'true'
+      - run: ./gradlew runData
+        if: github.event.inputs.assets == 'true'
+        continue-on-error: true
       - run: ./gradlew build
+      
       - run: echo "FILE=$(ls -d build/libs/*)" >> $GITHUB_ENV
       - run: echo "FILENAME=$(cd build/libs; ls *)" >> $GITHUB_ENV
       - run: cd ../../
 
-      - uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ github.event.inputs.version }}
-          release_name: ${{ github.event.inputs.version }}
-          draft: true
-          prerelease: false
-        id: create_release
-
-      - uses: actions/upload-release-asset@v1.0.1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ${{ env.FILE }}
-          asset_name: ${{ env.FILENAME }}
-          asset_content_type: application/java-archive
-          
-      - uses: eregon/publish-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          release_id: ${{ steps.create_release.outputs.id }}
-
-      - uses: itsmeow/curseforge-upload@v3
+      - uses: Kir-Antipov/mc-publish@v3.3
         if: github.event.inputs.publish == 'true'
         with:
-          file_path: ${{ env.FILE }}
-          game_endpoint: "minecraft"
-          game_versions: "Minecraft 1.16:1.16.5,Java 8,Forge,Client,Server"
-          release_type: ${{ github.event.inputs.type }}
+          name: ${{ env.FILENAME }}
+          version: ${{ github.event.inputs.version }}
+          version-type: ${{ github.event.inputs.type }}
           changelog: ${{ github.event.inputs.changelog }}
-          project_id: "813035"
-          token: ${{ secrets.CF_API_TOKEN }}
+          loaders: ["forge"]
+          game-versions: ["1.16.5"]
+          java: ["8"]
+
+          modrinth-id: AANobbMI
+          modrinth-token: ${{ secrets.GITHUB_TOKEN }}
+
+          curseforge-id: 813035
+          curseforge-token: ${{ secrets.CF_API_TOKEN }}
+
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-tag: ${{ github.event.inputs.version }}
