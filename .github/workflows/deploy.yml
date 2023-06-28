@@ -1,4 +1,4 @@
-name: Deploy
+name: deploy
 run-name: Deploying the mod...
 
 on: 
@@ -32,7 +32,7 @@ on:
         default: true
 
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
