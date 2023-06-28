@@ -62,7 +62,7 @@ jobs:
           java: "8"
 
           modrinth-id: "Lddihzs4"
-          modrinth-token: ${{ secrets.GITHUB_TOKEN }}
+          modrinth-token: ${{ secrets.MODRINTH_API_TOKEN }}
 
           curseforge-id: 813035
           curseforge-token: ${{ secrets.CF_API_TOKEN }}
