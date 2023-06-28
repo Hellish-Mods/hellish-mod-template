@@ -57,9 +57,9 @@ jobs:
           version: ${{ github.event.inputs.version }}
           version-type: ${{ github.event.inputs.type }}
           changelog: ${{ github.event.inputs.changelog }}
-          loaders: ["forge"]
-          game-versions: ["1.16.5"]
-          java: ["8"]
+          loaders: "forge"
+          game-versions: "1.16.5"
+          java: "8"
 
           modrinth-id: AANobbMI
           modrinth-token: ${{ secrets.GITHUB_TOKEN }}
