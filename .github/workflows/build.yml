@@ -3,6 +3,11 @@ run-name: Building the mod...
 
 on: [workflow_dispatch]
 
+inputs:
+  version:
+    description: "Version title"
+    required: true
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -10,16 +15,15 @@ jobs:
       - uses: actions/checkout@v3
 
       - run: ./gradlew build
-      - run: echo "VERSION=$(ls build/libs | cut -d "-" -f 2- | cut -d "." -f 1)" >> $GITHUB_ENV
       - run: echo "FILE=$(ls -d build/libs/*)" >> $GITHUB_ENV
-      - run: echo "FILENAME=$(ls build/libs)" >> $GITHUB_ENV
+      - run: echo "FILENAME=$(cd build/libs; ls build/libs/*)" >> $GITHUB_ENV
 
       - uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ env.VERSION }}
-          release_name: ${{ env.VERSION }}
+          tag_name: ${{ github.event.inputs.version }}
+          release_name: ${{ github.event.inputs.version }}
           draft: true
           prerelease: false
         id: create_release
