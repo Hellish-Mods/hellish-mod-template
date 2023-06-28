@@ -8,13 +8,23 @@ on:
         description: "Version Title"
         required: true
       type:
-        description: "Release Type (alpha/beta/release)"
+        type: choice
+        description: "Release Type"
+        options:
+        - release
+        - beta
+        - alpha
         required: false
         default: "release"
       changelog:
         description: "Changelog"
         required: false
         default: ""
+      publish:
+        type: boolean
+        description: "Publish to curseforge and modrinth?"
+        required: false
+        default: true
 
 jobs:
   build:
