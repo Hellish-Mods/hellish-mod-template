@@ -5,8 +5,16 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: "Version title"
+        description: "Version Title"
         required: true
+      type:
+        description: "Release Type (alpha/beta/release)"
+        required: false
+        default: "release"
+      changelog:
+        description: "Changelog"
+        required: false
+        default: ""
 
 jobs:
   build:
@@ -14,9 +22,11 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+      - run: echo "version=${{ github.event.inputs.version }}" >> gradle.properties
       - run: ./gradlew build
       - run: echo "FILE=$(ls -d build/libs/*)" >> $GITHUB_ENV
       - run: echo "FILENAME=$(cd build/libs; ls *)" >> $GITHUB_ENV
+      - run: cd ../../
 
       - uses: actions/create-release@v1
         env:
@@ -42,3 +52,13 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           release_id: ${{ steps.create_release.outputs.id }}
+
+      - uses: itsmeow/curseforge-upload@v3
+        with:
+          file_path: ${{ env.FILE }}
+          game_endpoint: "minecraft"
+          game_versions: "Minecraft 1.16:1.16.5,Java 8,Forge,Client,Server"
+          release_type: ${{ github.event.inputs.type }}
+          changelog: ${{ github.event.inputs.changelog }}
+          project_id: "813035"
+          token: ${{ secrets.CF_API_TOKEN }}
